@@ -1,53 +1,42 @@
-# Ù„ÙˆØ­Ø© Ø£Ø¹Ù…Ø§Ù„ÙŠ
+# Analytics Dashboard
 
-ØªØ·Ø¨ÙŠÙ‚ iPhone ØªÙØ§Ø¹Ù„ÙŠ Ù„Ø¹Ø±Ø¶ ÙˆØªØ­Ù„ÙŠÙ„ Ù…Ù„ÙØ§Øª Excel ÙˆCSV Ù…Ø­Ù„ÙŠØ§Ù‹. Ø§Ù„ÙˆØ§Ø¬Ù‡Ø© Ø¹Ø±Ø¨ÙŠØ© ÙˆØ¯Ø§ÙƒÙ†Ø©ØŒ ÙˆØªØ­ØªÙˆÙŠ Ø¹Ù„Ù‰ Ù…Ø¤Ø´Ø±Ø§Øª Ø£Ø¯Ø§Ø¡ØŒ Ø±Ø³ÙˆÙ… ØªÙØ§Ø¹Ù„ÙŠØ©ØŒ ÙÙ„Ø§ØªØ±ØŒ ÙˆÙ…Ù‚Ø§Ø±Ù†Ø© Ø¨Ø§Ù„ÙØªØ±Ø© Ø§Ù„Ø³Ø§Ø¨Ù‚Ø©.
+An interactive iPhone dashboard for importing and analyzing Excel and CSV files locally. The app uses a polished dark interface with KPIs, interactive charts, filters, and previous-period comparisons.
 
-## ØªØ¬Ø±Ø¨Ø© Ø§Ù„Ù…Ø´Ø±ÙˆØ¹
+## Run the project
 
 ```bash
 npm install
 npx expo start
 ```
 
-ÙŠÙ…ÙƒÙ† ÙØªØ­ Ø±Ù…Ø² QR Ù…Ù† ØªØ·Ø¨ÙŠÙ‚ Expo Go Ø§Ù„Ù…ØªÙˆØ§ÙÙ‚ Ù…Ø¹ SDK 57ØŒ Ø£Ùˆ ØªØ´ØºÙŠÙ„ Ù†Ø³Ø®Ø© Ø§Ù„ÙˆÙŠØ¨:
+Open the QR code using Expo Go for SDK 57, or run the web version:
 
 ```bash
-npm run web
+npx expo start --web
 ```
 
-## ØµÙŠØºØ© Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª
+## Data format
 
-ÙŠÙ‚Ø±Ø£ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ø£ÙˆÙ„ ÙˆØ±Ù‚Ø© ÙÙŠ Ù…Ù„Ù Excel. ÙŠØªØ¹Ø±Ù‘Ù Ø¹Ù„Ù‰ Ø£Ø³Ù…Ø§Ø¡ Ø§Ù„Ø£Ø¹Ù…Ø¯Ø© Ø¨Ø§Ù„Ø¹Ø±Ø¨ÙŠØ© Ø£Ùˆ Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠØ©:
+The app reads the first worksheet in an Excel file and recognizes these columns:
 
-- Ø§Ù„ØªØ§Ø±ÙŠØ® / Date
-- Ø§Ù„ÙØ¦Ø© / Category
-- Ø§Ù„Ù…Ù†Ø·Ù‚Ø© / Region
-- Ø§Ù„Ù‚Ù†Ø§Ø© / Channel
-- Ø§Ù„Ù…Ù†ØªØ¬ / Product
-- Ø§Ù„Ù…Ù†Ø¯ÙˆØ¨ / Representative
-- Ø§Ù„Ù…Ø¨ÙŠØ¹Ø§Øª / Sales Ø£Ùˆ Revenue
-- Ø§Ù„Ø·Ù„Ø¨Ø§Øª / Orders
-- Ø§Ù„Ù…Ø±ØªØ¬Ø¹Ø§Øª / Returns
-- Ø§Ù„ØªÙƒÙ„ÙØ© / Cost
-- Ø§Ù„ÙƒÙ…ÙŠØ© / Quantity
-- Ø§Ù„Ø³Ø¹Ø± / Price
+- Date
+- Category
+- Region
+- Channel
+- Product
+- Representative
+- Sales or Revenue
+- Orders
+- Returns
+- Cost
+- Quantity
+- Price
 
-Ø¥Ø°Ø§ Ù„Ù… ÙŠÙˆØ¬Ø¯ Ø¹Ù…ÙˆØ¯ Ø§Ù„Ù…Ø¨ÙŠØ¹Ø§ØªØŒ ÙŠØ­Ø³Ø¨ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ø§Ù„Ù…Ø¨ÙŠØ¹Ø§Øª Ù…Ù† `Ø§Ù„Ø³Ø¹Ø± Ã— Ø§Ù„ÙƒÙ…ÙŠØ©`. ØªÙˆØ¬Ø¯ Ø¹ÙŠÙ†Ø© Ø¬Ø§Ù‡Ø²Ø© ÙÙŠ `sample-data.csv`.
+If a Sales column is unavailable, the app calculates sales as `Price × Quantity`. A ready-to-use example is included in `sample-data.csv`.
 
-## Ø¥Ù†Ø´Ø§Ø¡ IPA
+## IPA
 
-ÙŠØªØ·Ù„Ø¨ Ø¥Ù†Ø´Ø§Ø¡ IPA Ù…ÙˆÙ‚Ù‘Ø¹Ø§Ù‹ Ø­Ø³Ø§Ø¨ Apple Developer ÙˆØ¨ÙŠØ§Ù†Ø§Øª Ø§Ù„ØªÙˆÙ‚ÙŠØ¹ Ø§Ù„Ø®Ø§ØµØ© Ø¨ØµØ§Ø­Ø¨ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚:
+The GitHub Actions workflow builds an unsigned IPA on macOS. Sign the IPA with your Apple Developer certificate and provisioning profile before installing it on an iPhone.
 
-```bash
-npx eas-cli@latest login
-npx eas-cli@latest build --platform ios --profile preview
-```
+Change `ios.bundleIdentifier` in `app.json` before signing if the identifier is already registered to another Apple Developer account.
 
-Ù†Ø³Ø®Ø© `preview` ÙÙŠ `eas.json` Ù…Ù‡ÙŠØ£Ø© Ù„Ù„ØªÙˆØ²ÙŠØ¹ Ø§Ù„Ø¯Ø§Ø®Ù„ÙŠ Ø¹Ù„Ù‰ Ø§Ù„Ø£Ø¬Ù‡Ø²Ø© Ø§Ù„Ù…Ø³Ø¬Ù„Ø©. ÙˆÙ„Ù„Ù†Ø´Ø± Ø¹Ø¨Ø± TestFlight:
-
-```bash
-npx eas-cli@latest build --platform ios --profile production
-npx eas-cli@latest submit --platform ios --profile production
-```
-
-ØºÙŠÙ‘Ø± `ios.bundleIdentifier` ÙÙŠ `app.json` Ù‚Ø¨Ù„ Ø§Ù„Ø¨Ù†Ø§Ø¡ Ø¥Ø°Ø§ ÙƒØ§Ù† Ø§Ù„Ù…Ø¹Ø±Ù‘Ù Ù…Ø³ØªØ®Ø¯Ù…Ø§Ù‹ ÙÙŠ Ø­Ø³Ø§Ø¨ Apple Ø¢Ø®Ø±.
