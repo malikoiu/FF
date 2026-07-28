@@ -44,12 +44,12 @@ const palette = {
 const savedFile = () => new File(Paths.document, 'dashboard-data.json');
 
 const formatCompact = (value: number) =>
-  new Intl.NumberFormat('ar-SA', {
+  new Intl.NumberFormat('en-US', {
     notation: 'compact',
     maximumFractionDigits: 1,
   }).format(value);
 
-const formatMoney = (value: number) => `${formatCompact(value)} Ø±.Ø³`;
+const formatMoney = (value: number) => `$${formatCompact(value)}`;
 
 type CardProps = {
   title: string;
@@ -137,7 +137,7 @@ export default function DashboardScreen() {
   const [rows, setRows] = useState<DashboardRow[]>(createSampleData);
   const [filters, setFilters] = useState<DashboardFilters>(defaultFilters);
   const [filterVisible, setFilterVisible] = useState(false);
-  const [fileName, setFileName] = useState('Ø¨ÙŠØ§Ù†Ø§Øª ØªØ¬Ø±ÙŠØ¨ÙŠØ©');
+  const [fileName, setFileName] = useState('Sample data');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -148,7 +148,7 @@ export default function DashboardScreen() {
         const saved = JSON.parse(await file.text()) as { rows: DashboardRow[]; fileName: string };
         if (saved.rows?.length) {
           setRows(saved.rows);
-          setFileName(saved.fileName || 'Ø¢Ø®Ø± Ù…Ù„Ù');
+          setFileName(saved.fileName || 'Last file');
         }
       } catch {
         // A damaged cache should never block the dashboard from opening.
@@ -168,10 +168,10 @@ export default function DashboardScreen() {
     [rows],
   );
   const activeFilterCount = [
-    filters.region !== 'Ø§Ù„ÙƒÙ„',
-    filters.category !== 'Ø§Ù„ÙƒÙ„',
-    filters.channel !== 'Ø§Ù„ÙƒÙ„',
-    filters.period !== 'Ø§Ù„ÙƒÙ„',
+    filters.region !== 'All',
+    filters.category !== 'All',
+    filters.channel !== 'All',
+    filters.period !== 'All',
   ].filter(Boolean).length;
 
   const patchFilters = (patch: Partial<DashboardFilters>) =>
@@ -194,7 +194,7 @@ export default function DashboardScreen() {
       const asset = result.assets[0];
       const pickedFile = new File(asset.uri);
       const parsed = parseWorkbook(await pickedFile.bytes());
-      const name = asset.name || 'Ù…Ù„Ù Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª';
+      const name = asset.name || 'Data file';
       setRows(parsed);
       setFileName(name);
       setFilters(defaultFilters);
@@ -207,21 +207,21 @@ export default function DashboardScreen() {
         // Import remains useful even if the device cannot persist the cache.
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'ØªØ¹Ø°Ù‘Ø±Øª Ù‚Ø±Ø§Ø¡Ø© Ø§Ù„Ù…Ù„Ù.';
-      Alert.alert('Ù„Ù… ÙŠØªÙ… Ø§Ø³ØªÙŠØ±Ø§Ø¯ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª', message);
+      const message = error instanceof Error ? error.message : 'The file could not be read.';
+      Alert.alert('Data import failed', message);
     } finally {
       setLoading(false);
     }
   };
 
   const restoreSample = () => {
-    Alert.alert('Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„ØªØ¬Ø±ÙŠØ¨ÙŠØ©ØŸ', 'Ø³ÙŠØªÙ… Ø§Ø³ØªØ¨Ø¯Ø§Ù„ Ø§Ù„Ø¹Ø±Ø¶ Ø§Ù„Ø­Ø§Ù„ÙŠ ÙÙ‚Ø·ØŒ ÙˆÙŠÙ…ÙƒÙ†Ùƒ Ø±ÙØ¹ Ù…Ù„ÙÙƒ Ù…Ø¬Ø¯Ø¯Ø§Ù‹.', [
-      { text: 'Ø¥Ù„ØºØ§Ø¡', style: 'cancel' },
+    Alert.alert('Use sample data?', 'This will replace the current dashboard. You can import your file again at any time.', [
+      { text: 'Cancel', style: 'cancel' },
       {
-        text: 'Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„Ù†Ù…ÙˆØ°Ø¬',
+        text: 'Use sample',
         onPress: () => {
           setRows(createSampleData());
-          setFileName('Ø¨ÙŠØ§Ù†Ø§Øª ØªØ¬Ø±ÙŠØ¨ÙŠØ©');
+          setFileName('Sample data');
           setFilters(defaultFilters);
           setFilterVisible(false);
         },
@@ -242,12 +242,12 @@ export default function DashboardScreen() {
             </View>
             <View style={styles.titleCopy}>
               <Text style={styles.eyebrow}>ANALYTICS EXPLORER</Text>
-              <Text style={styles.pageTitle}>Ù„ÙˆØ­Ø© Ø§Ù„Ø£Ø¯Ø§Ø¡</Text>
+              <Text style={styles.pageTitle}>Performance Dashboard</Text>
             </View>
           </View>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Ø±ÙØ¹ Ù…Ù„Ù Excel Ø£Ùˆ CSV"
+            accessibilityLabel="Import an Excel or CSV file"
             onPress={importFile}
             disabled={loading}
             style={({ pressed }) => [
@@ -259,8 +259,8 @@ export default function DashboardScreen() {
               <ActivityIndicator size="small" color={palette.background} />
             ) : (
               <>
-                <Text style={styles.uploadIcon}>â†‘</Text>
-                <Text style={styles.uploadText}>Ø±ÙØ¹ Ù…Ù„Ù</Text>
+                <Text style={styles.uploadIcon}>↑</Text>
+                <Text style={styles.uploadText}>Import file</Text>
               </>
             )}
           </Pressable>
@@ -275,86 +275,86 @@ export default function DashboardScreen() {
             <View style={styles.fileCopy}>
               <Text numberOfLines={1} style={styles.fileName}>{fileName}</Text>
               <Text style={styles.fileMeta}>
-                {formatCompact(filtered.length)} ØµÙ Ù…Ø¹Ø±ÙˆØ¶ Ù…Ù† {formatCompact(rows.length)}
+                Showing {formatCompact(filtered.length)} of {formatCompact(rows.length)} rows
               </Text>
             </View>
             <Pressable
               onPress={() => setFilterVisible(true)}
               style={({ pressed }) => [styles.filterButton, pressed && styles.pressed]}>
-              <Text style={styles.filterGlyph}>â‰¡</Text>
+              <Text style={styles.filterGlyph}>≡</Text>
               <Text style={styles.filterButtonText}>
-                Ø§Ù„ÙÙ„Ø§ØªØ±{activeFilterCount ? ` (${activeFilterCount})` : ''}
+                Filters{activeFilterCount ? ` (${activeFilterCount})` : ''}
               </Text>
             </Pressable>
           </View>
 
           {!filtered.length ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyIcon}>âŒ</Text>
-              <Text style={styles.emptyTitle}>Ù„Ø§ ØªÙˆØ¬Ø¯ Ù†ØªØ§Ø¦Ø¬ Ø¨Ù‡Ø°Ù‡ Ø§Ù„ÙÙ„Ø§ØªØ±</Text>
-              <Text style={styles.emptyBody}>ØºÙŠÙ‘Ø± Ø§Ù„ÙÙ„Ø§ØªØ± Ø£Ùˆ Ø§Ø®ØªØ± â€œØ§Ù„ÙƒÙ„â€ Ù„Ø¥Ø¸Ù‡Ø§Ø± Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª.</Text>
+              <Text style={styles.emptyIcon}>⌁</Text>
+              <Text style={styles.emptyTitle}>No results match these filters</Text>
+              <Text style={styles.emptyBody}>Change the filters or select “All” to show your data.</Text>
               <Pressable
                 onPress={() => setFilters(defaultFilters)}
                 style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}>
-                <Text style={styles.secondaryButtonText}>Ø¥Ø¹Ø§Ø¯Ø© Ø¶Ø¨Ø· Ø§Ù„ÙÙ„Ø§ØªØ±</Text>
+                <Text style={styles.secondaryButtonText}>Reset filters</Text>
               </Pressable>
             </View>
           ) : (
             <>
               <View style={styles.kpiGrid}>
                 <KpiCard
-                  label="ØµØ§ÙÙŠ Ø§Ù„Ù…Ø¨ÙŠØ¹Ø§Øª"
+                  label="Net Sales"
                   value={formatMoney(data.revenue)}
-                  detail={filters.includeVat ? 'Ø´Ø§Ù…Ù„ Ø§Ù„Ø¶Ø±ÙŠØ¨Ø©' : 'Ù‚Ø¨Ù„ Ø§Ù„Ø¶Ø±ÙŠØ¨Ø©'}
+                  detail={filters.includeVat ? 'Including VAT' : 'Before VAT'}
                   color={palette.cyan}
                 />
                 <KpiCard
-                  label="Ù…ØªÙˆØ³Ø· Ø§Ù„Ø·Ù„Ø¨"
+                  label="Average Order"
                   value={formatMoney(data.averageOrder)}
-                  detail={`${formatCompact(data.orders)} Ø·Ù„Ø¨`}
+                  detail={`${formatCompact(data.orders)} orders`}
                   color="#F3F5FB"
                 />
                 <KpiCard
-                  label="Ø§Ù„Ù†Ù…Ùˆ"
-                  value={`${data.growth >= 0 ? '+' : ''}${data.growth.toFixed(1)}Ùª`}
-                  detail="Ù…Ù‚Ø§Ø¨Ù„ Ø§Ù„Ù†ØµÙ Ø§Ù„Ø³Ø§Ø¨Ù‚"
+                  label="Growth"
+                  value={`${data.growth >= 0 ? '+' : ''}${data.growth.toFixed(1)}%`}
+                  detail="vs. previous half"
                   color={data.growth >= 0 ? palette.green : palette.pink}
                 />
                 <KpiCard
-                  label="Ù†Ø³Ø¨Ø© Ø§Ù„Ù…Ø±ØªØ¬Ø¹Ø§Øª"
-                  value={`${data.returnRate.toFixed(1)}Ùª`}
-                  detail={`Ù‡Ø§Ù…Ø´ ${data.margin.toFixed(1)}Ùª`}
+                  label="Return Rate"
+                  value={`${data.returnRate.toFixed(1)}%`}
+                  detail={`${data.margin.toFixed(1)}% margin`}
                   color={palette.pink}
                 />
               </View>
 
               <View style={[styles.chartGrid, isWide && styles.chartGridWide]}>
-                <Card title="Ø§Ù„Ù…Ø¨ÙŠØ¹Ø§Øª Ø­Ø³Ø¨ Ø§Ù„ÙØ¦Ø©" style={isWide ? styles.halfCard : undefined}>
+                <Card title="Sales by Category" style={isWide ? styles.halfCard : undefined}>
                   <BarChart data={data.categories} width={chartWidth} />
                 </Card>
                 <Card
-                  title="Ø§ØªØ¬Ø§Ù‡ Ø§Ù„Ù…Ø¨ÙŠØ¹Ø§Øª"
-                  subtitle="Ø§Ø¶ØºØ· Ø¹Ù„Ù‰ Ø£ÙŠ Ù†Ù‚Ø·Ø© Ù„Ù„ØªÙØ§ØµÙŠÙ„"
+                  title="Sales Trend"
+                  subtitle="Tap any point for details"
                   style={isWide ? styles.halfCard : undefined}>
                   <LineChart data={data.trend} width={chartWidth} compare={filters.comparePrevious} />
                 </Card>
                 <Card
-                  title="Ø§Ù„Ø³Ø¹Ø± Ù…Ù‚Ø§Ø¨Ù„ Ø§Ù„ÙƒÙ…ÙŠØ©"
-                  subtitle="Ø§Ø¶ØºØ· Ø¹Ù„Ù‰ Ø§Ù„Ù†Ù‚Ø§Ø· Ù„Ø§Ø³ØªÙƒØ´Ø§ÙÙ‡Ø§"
+                  title="Price vs. Quantity"
+                  subtitle="Tap a point to explore"
                   style={isWide ? styles.halfCard : undefined}>
                   <ScatterChart data={data.scatter} width={chartWidth} />
                 </Card>
-                <Card title="Ù…Ø²ÙŠØ¬ Ù‚Ù†ÙˆØ§Øª Ø§Ù„Ø¨ÙŠØ¹" style={isWide ? styles.halfCard : undefined}>
+                <Card title="Sales Channel Mix" style={isWide ? styles.halfCard : undefined}>
                   <DonutChart data={data.channels} width={chartWidth} />
                 </Card>
               </View>
 
-              <Card title="ØªÙØ§ØµÙŠÙ„ Ø£ÙØ¶Ù„ Ø§Ù„Ù…Ù†ØªØ¬Ø§Øª">
+              <Card title="Top Product Details">
                 <View style={styles.tableHeader}>
-                  <Text style={[styles.tableHeaderText, styles.productCell]}>Ø§Ù„Ù…Ù†ØªØ¬</Text>
-                  <Text style={styles.tableHeaderText}>Ø§Ù„Ù…Ø¨ÙŠØ¹Ø§Øª</Text>
-                  <Text style={styles.tableHeaderText}>Ø§Ù„Ù‡Ø§Ù…Ø´</Text>
-                  <Text style={styles.tableHeaderText}>Ø§Ù„Ù†Ù…Ùˆ</Text>
+                  <Text style={[styles.tableHeaderText, styles.productCell]}>Product</Text>
+                  <Text style={styles.tableHeaderText}>Sales</Text>
+                  <Text style={styles.tableHeaderText}>Margin</Text>
+                  <Text style={styles.tableHeaderText}>Growth</Text>
                 </View>
                 {data.products.map((product, index) => (
                   <View
@@ -367,20 +367,20 @@ export default function DashboardScreen() {
                       <Text numberOfLines={1} style={styles.productName}>{product.name}</Text>
                     </View>
                     <Text style={styles.tableValue}>{formatCompact(product.sales)}</Text>
-                    <Text style={styles.tableValue}>{product.margin.toFixed(0)}Ùª</Text>
+                    <Text style={styles.tableValue}>{product.margin.toFixed(0)}%</Text>
                     <Text style={[styles.tableValue, { color: product.growth >= 0 ? palette.green : palette.pink }]}>
-                      {product.growth >= 0 ? '+' : ''}{product.growth.toFixed(0)}Ùª
+                      {product.growth >= 0 ? '+' : ''}{product.growth.toFixed(0)}%
                     </Text>
                   </View>
                 ))}
               </Card>
 
               <View style={styles.privacyNote}>
-                <Text style={styles.privacyIcon}>â—‰</Text>
+                <Text style={styles.privacyIcon}>◉</Text>
                 <View style={styles.privacyCopy}>
-                  <Text style={styles.privacyTitle}>Ø¨ÙŠØ§Ù†Ø§ØªÙƒ ØªØ¨Ù‚Ù‰ Ø¹Ù„Ù‰ Ø¬Ù‡Ø§Ø²Ùƒ</Text>
+                  <Text style={styles.privacyTitle}>Your data stays on your device</Text>
                   <Text style={styles.privacyBody}>
-                    ØªØªÙ… Ù‚Ø±Ø§Ø¡Ø© Ø§Ù„Ù…Ù„Ù Ù…Ø­Ù„ÙŠØ§Ù‹ØŒ ÙˆÙ„Ø§ ÙŠØ±Ø³Ù„ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ø¨ÙŠØ§Ù†Ø§ØªÙ‡ Ø¥Ù„Ù‰ Ø£ÙŠ Ø®Ø§Ø¯Ù….
+                    Files are processed locally. The app never sends your data to a server.
                   </Text>
                 </View>
               </View>
@@ -401,46 +401,46 @@ export default function DashboardScreen() {
                 onPress={() => setFilterVisible(false)}
                 hitSlop={12}
                 style={({ pressed }) => [styles.doneButton, pressed && styles.pressed]}>
-                <Text style={styles.doneText}>ØªÙ…</Text>
+                <Text style={styles.doneText}>Done</Text>
               </Pressable>
-              <Text style={styles.modalTitle}>Ø§Ù„ÙÙ„Ø§ØªØ± ÙˆØ§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª</Text>
+              <Text style={styles.modalTitle}>Filters & Settings</Text>
               <Pressable onPress={() => setFilters(defaultFilters)} hitSlop={12}>
-                <Text style={styles.resetText}>Ø¥Ø¹Ø§Ø¯Ø© Ø¶Ø¨Ø·</Text>
+                <Text style={styles.resetText}>Reset</Text>
               </Pressable>
             </View>
 
             <ScrollView contentContainerStyle={styles.modalContent}>
               <FilterGroup
-                title="Ø§Ù„ÙØªØ±Ø©"
-                values={['Ø§Ù„ÙƒÙ„', 'Ø¢Ø®Ø± 3 Ø£Ø´Ù‡Ø±', 'Ø¢Ø®Ø± 6 Ø£Ø´Ù‡Ø±', 'Ø¢Ø®Ø± 12 Ø´Ù‡Ø±']}
+                title="Period"
+                values={['All', 'Last 3 months', 'Last 6 months', 'Last 12 months']}
                 selected={filters.period}
                 onSelect={(period) => patchFilters({ period: period as DashboardFilters['period'] })}
               />
               <FilterGroup
-                title="Ø§Ù„Ù…Ù†Ø·Ù‚Ø©"
+                title="Region"
                 values={options.regions}
                 selected={filters.region}
                 onSelect={(region) => patchFilters({ region })}
               />
               <FilterGroup
-                title="Ø§Ù„ÙØ¦Ø©"
+                title="Category"
                 values={options.categories}
                 selected={filters.category}
                 onSelect={(category) => patchFilters({ category })}
               />
               <FilterGroup
-                title="Ù‚Ù†Ø§Ø© Ø§Ù„Ø¨ÙŠØ¹"
+                title="Sales Channel"
                 values={options.channels}
                 selected={filters.channel}
                 onSelect={(channel) => patchFilters({ channel })}
               />
 
               <View style={styles.switchGroup}>
-                <Text style={styles.filterTitle}>Ø®ÙŠØ§Ø±Ø§Øª Ø§Ù„Ø­Ø³Ø§Ø¨</Text>
+                <Text style={styles.filterTitle}>Calculation Options</Text>
                 <View style={styles.switchRow}>
                   <View style={styles.switchCopy}>
-                    <Text style={styles.switchTitle}>Ø´Ø§Ù…Ù„ Ø¶Ø±ÙŠØ¨Ø© Ø§Ù„Ù‚ÙŠÙ…Ø© Ø§Ù„Ù…Ø¶Ø§ÙØ©</Text>
-                    <Text style={styles.switchSubtitle}>Ø¥Ø¶Ø§ÙØ© 15Ùª Ø¥Ù„Ù‰ Ø§Ù„Ù…Ø¨ÙŠØ¹Ø§Øª</Text>
+                    <Text style={styles.switchTitle}>Include VAT</Text>
+                    <Text style={styles.switchSubtitle}>Add 15% to sales</Text>
                   </View>
                   <Switch
                     value={filters.includeVat}
@@ -451,8 +451,8 @@ export default function DashboardScreen() {
                 </View>
                 <View style={styles.switchRow}>
                   <View style={styles.switchCopy}>
-                    <Text style={styles.switchTitle}>Ø®ØµÙ… Ø§Ù„Ù…Ø±ØªØ¬Ø¹Ø§Øª</Text>
-                    <Text style={styles.switchSubtitle}>Ø¹Ø±Ø¶ ØµØ§ÙÙŠ Ø§Ù„Ù…Ø¨ÙŠØ¹Ø§Øª Ø¨Ø¹Ø¯ Ø§Ù„Ø¥Ø±Ø¬Ø§Ø¹</Text>
+                    <Text style={styles.switchTitle}>Deduct Returns</Text>
+                    <Text style={styles.switchSubtitle}>Show net sales after returns</Text>
                   </View>
                   <Switch
                     value={filters.excludeReturns}
@@ -463,8 +463,8 @@ export default function DashboardScreen() {
                 </View>
                 <View style={[styles.switchRow, styles.lastSwitchRow]}>
                   <View style={styles.switchCopy}>
-                    <Text style={styles.switchTitle}>Ù…Ù‚Ø§Ø±Ù†Ø© Ø¨Ø§Ù„ÙØªØ±Ø© Ø§Ù„Ø³Ø§Ø¨Ù‚Ø©</Text>
-                    <Text style={styles.switchSubtitle}>Ø¥Ø¸Ù‡Ø§Ø± Ø®Ø· Ù…Ø±Ø¬Ø¹ÙŠ ÙÙŠ Ù…Ø®Ø·Ø· Ø§Ù„Ø§ØªØ¬Ø§Ù‡</Text>
+                    <Text style={styles.switchTitle}>Compare Previous Period</Text>
+                    <Text style={styles.switchSubtitle}>Show a reference line on the trend chart</Text>
                   </View>
                   <Switch
                     value={filters.comparePrevious}
@@ -476,17 +476,17 @@ export default function DashboardScreen() {
               </View>
 
               <View style={styles.columnsHint}>
-                <Text style={styles.columnsTitle}>Ø§Ù„Ø£Ø¹Ù…Ø¯Ø© Ø§Ù„ØªÙŠ ÙŠØªØ¹Ø±Ù‘Ù Ø¹Ù„ÙŠÙ‡Ø§ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚</Text>
+                <Text style={styles.columnsTitle}>Supported Columns</Text>
                 <Text style={styles.columnsBody}>
-                  Ø§Ù„ØªØ§Ø±ÙŠØ®ØŒ Ø§Ù„ÙØ¦Ø©ØŒ Ø§Ù„Ù…Ù†Ø·Ù‚Ø©ØŒ Ø§Ù„Ù‚Ù†Ø§Ø©ØŒ Ø§Ù„Ù…Ù†ØªØ¬ØŒ Ø§Ù„Ù…Ø¨ÙŠØ¹Ø§ØªØŒ Ø§Ù„Ø·Ù„Ø¨Ø§ØªØŒ Ø§Ù„Ù…Ø±ØªØ¬Ø¹Ø§ØªØŒ
-                  Ø§Ù„ØªÙƒÙ„ÙØ©ØŒ Ø§Ù„ÙƒÙ…ÙŠØ©ØŒ Ø§Ù„Ø³Ø¹Ø±. ÙŠÙ‚Ø¨Ù„ Ø£Ø³Ù…Ø§Ø¡ Ø§Ù„Ø£Ø¹Ù…Ø¯Ø© Ø¨Ø§Ù„Ø¹Ø±Ø¨ÙŠ Ø£Ùˆ Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠ.
+                  Date, Category, Region, Channel, Product, Sales, Orders, Returns,
+                  Cost, Quantity, and Price.
                 </Text>
               </View>
 
               <Pressable
                 onPress={restoreSample}
                 style={({ pressed }) => [styles.sampleButton, pressed && styles.pressed]}>
-                <Text style={styles.sampleButtonText}>Ø¹Ø±Ø¶ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„ØªØ¬Ø±ÙŠØ¨ÙŠØ©</Text>
+                <Text style={styles.sampleButtonText}>Show Sample Data</Text>
               </Pressable>
             </ScrollView>
           </SafeAreaView>
@@ -507,7 +507,7 @@ const styles = StyleSheet.create({
   topBar: {
     minHeight: 76,
     paddingHorizontal: 16,
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderBottomWidth: StyleSheet.hairlineWidth,
@@ -516,7 +516,7 @@ const styles = StyleSheet.create({
   },
   titleBlock: {
     flex: 1,
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 11,
   },
@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 14,
     backgroundColor: palette.cyan,
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 7,
@@ -611,7 +611,7 @@ const styles = StyleSheet.create({
     borderColor: palette.border,
     backgroundColor: '#0D1426',
     paddingHorizontal: 13,
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
   },
@@ -632,7 +632,7 @@ const styles = StyleSheet.create({
     color: palette.text,
     fontSize: 13,
     fontWeight: '700',
-    textAlign: 'right',
+    textAlign: 'left',
   },
   fileMeta: {
     color: palette.secondary,
@@ -644,7 +644,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 11,
     backgroundColor: palette.surfaceRaised,
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
   },
@@ -659,7 +659,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   kpiGrid: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10,
   },
@@ -694,7 +694,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
     marginTop: 8,
     width: '100%',
-    textAlign: 'right',
+    textAlign: 'left',
   },
   kpiDetail: {
     color: '#7F89A5',
@@ -705,7 +705,7 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   chartGridWide: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     flexWrap: 'wrap',
   },
   halfCard: {
@@ -721,7 +721,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   cardHeader: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 13,
   },
@@ -730,17 +730,17 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 21,
     fontWeight: '800',
-    textAlign: 'right',
+    textAlign: 'left',
   },
   cardSubtitle: {
     color: palette.secondary,
     fontSize: 10,
     marginTop: 2,
-    textAlign: 'right',
+    textAlign: 'left',
   },
   tableHeader: {
     minHeight: 34,
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: palette.border,
@@ -754,11 +754,11 @@ const styles = StyleSheet.create({
   },
   productCell: {
     flex: 1.55,
-    textAlign: 'right',
+    textAlign: 'left',
   },
   tableRow: {
     minHeight: 54,
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: palette.border,
@@ -767,7 +767,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
   },
   productNameCell: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
@@ -788,7 +788,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     flex: 1,
-    textAlign: 'right',
+    textAlign: 'left',
   },
   tableValue: {
     flex: 0.65,
@@ -798,7 +798,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   privacyNote: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 11,
     paddingHorizontal: 14,
@@ -825,7 +825,7 @@ const styles = StyleSheet.create({
     color: '#81A7A7',
     fontSize: 10,
     lineHeight: 16,
-    textAlign: 'right',
+    textAlign: 'left',
   },
   emptyState: {
     minHeight: 360,
@@ -918,10 +918,10 @@ const styles = StyleSheet.create({
     color: '#DCE2F1',
     fontSize: 14,
     fontWeight: '800',
-    textAlign: 'right',
+    textAlign: 'left',
   },
   chipWrap: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
   },
@@ -976,13 +976,13 @@ const styles = StyleSheet.create({
     color: '#E4E8F3',
     fontSize: 13,
     fontWeight: '700',
-    textAlign: 'right',
+    textAlign: 'left',
   },
   switchSubtitle: {
     color: palette.secondary,
     fontSize: 10,
     marginTop: 3,
-    textAlign: 'right',
+    textAlign: 'left',
   },
   columnsHint: {
     borderRadius: 17,
@@ -1001,7 +1001,7 @@ const styles = StyleSheet.create({
     color: '#A39ABA',
     fontSize: 11,
     lineHeight: 19,
-    textAlign: 'right',
+    textAlign: 'left',
     marginTop: 5,
   },
   sampleButton: {
@@ -1018,3 +1018,4 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 });
+
