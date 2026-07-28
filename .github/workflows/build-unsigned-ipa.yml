@@ -1,0 +1,95 @@
+name: Build unsigned IPA
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build iOS app
+    runs-on: macos-15
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install JavaScript dependencies
+        run: npm ci
+
+      - name: Generate native iOS project
+        run: npx expo prebuild --platform ios --no-install --clean
+
+      - name: Install CocoaPods
+        run: |
+          cd ios
+          pod install --repo-update
+
+      - name: Build unsigned iOS application
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          WORKSPACE="$(find ios -maxdepth 1 -name '*.xcworkspace' -print -quit)"
+          if [[ -z "$WORKSPACE" ]]; then
+            echo "No Xcode workspace was generated."
+            exit 1
+          fi
+
+          SCHEME="$(basename "$WORKSPACE" .xcworkspace)"
+          echo "Building scheme: $SCHEME"
+
+          xcodebuild \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+          APP_PATH="$(find "$RUNNER_TEMP/DerivedData/Build/Products/Release-iphoneos" -maxdepth 1 -name '*.app' -print -quit)"
+          if [[ -z "$APP_PATH" ]]; then
+            echo "The iOS .app bundle was not produced."
+            exit 1
+          fi
+
+          mkdir -p "$RUNNER_TEMP/ipa/Payload"
+          cp -R "$APP_PATH" "$RUNNER_TEMP/ipa/Payload/"
+          ditto -c -k --sequesterRsrc --keepParent \
+            "$RUNNER_TEMP/ipa/Payload" \
+            "$GITHUB_WORKSPACE/AnalyticsDashboard-unsigned.ipa"
+
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' \
+            "$APP_PATH/Info.plist"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AnalyticsDashboard-unsigned-ipa
+          path: AnalyticsDashboard-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish GitHub prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          TAG="unsigned-${GITHUB_RUN_NUMBER}"
+          gh release create "$TAG" \
+            "AnalyticsDashboard-unsigned.ipa" \
+            --title "Analytics Dashboard unsigned IPA #${GITHUB_RUN_NUMBER}" \
+            --notes "Unsigned iOS IPA. Sign this file with your Apple Developer certificate before installing it on an iPhone." \
+            --prerelease
