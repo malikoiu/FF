@@ -20,10 +20,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
       - name: Install JavaScript dependencies
-        run: npm ci
+        run: |
+          rm -f package-lock.json
+          npm install --package-lock=false --no-audit --no-fund
 
       - name: Generate native iOS project
         run: npx expo prebuild --platform ios --no-install --clean
