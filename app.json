@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "Ù„ÙˆØ­Ø© Ø£Ø¹Ù…Ø§Ù„ÙŠ",
+    "slug": "analytics-dashboard",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "analyticsdashboard",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#070B18",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.malik.analyticsdashboard",
+      "infoPlist": {
+        "LSSupportsOpeningDocumentsInPlace": true,
+        "UIFileSharingEnabled": true
+      }
+    },
+    "android": {
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-document-picker",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#070B18"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
