@@ -19,27 +19,27 @@ export type DashboardFilters = {
   region: string;
   category: string;
   channel: string;
-  period: 'Ø§Ù„ÙƒÙ„' | 'Ø¢Ø®Ø± 3 Ø£Ø´Ù‡Ø±' | 'Ø¢Ø®Ø± 6 Ø£Ø´Ù‡Ø±' | 'Ø¢Ø®Ø± 12 Ø´Ù‡Ø±';
+  period: 'All' | 'Last 3 months' | 'Last 6 months' | 'Last 12 months';
   includeVat: boolean;
   excludeReturns: boolean;
   comparePrevious: boolean;
 };
 
-const ALL = 'Ø§Ù„ÙƒÙ„';
+const ALL = 'All';
 
 const aliases: Record<keyof DashboardRow, string[]> = {
-  date: ['date', 'orderdate', 'transactiondate', 'Ø§Ù„ØªØ§Ø±ÙŠØ®', 'ØªØ§Ø±ÙŠØ®', 'ØªØ§Ø±ÙŠØ®Ø§Ù„Ø·Ù„Ø¨'],
-  category: ['category', 'segment', 'Ø§Ù„ÙØ¦Ø©', 'Ø§Ù„ØªØµÙ†ÙŠÙ', 'Ø§Ù„Ù‚Ø³Ù…'],
-  region: ['region', 'area', 'city', 'Ø§Ù„Ù…Ù†Ø·Ù‚Ø©', 'Ø§Ù„Ù…Ø¯ÙŠÙ†Ø©'],
-  channel: ['channel', 'source', 'Ø§Ù„Ù‚Ù†Ø§Ø©', 'Ø§Ù„Ù…ØµØ¯Ø±'],
-  product: ['product', 'productname', 'item', 'Ø§Ù„Ù…Ù†ØªØ¬', 'Ø§Ø³Ù…Ø§Ù„Ù…Ù†ØªØ¬', 'Ø§Ù„ØµÙ†Ù'],
-  representative: ['representative', 'rep', 'salesrep', 'employee', 'Ø§Ù„Ù…Ù†Ø¯ÙˆØ¨', 'Ø§Ù„Ù…ÙˆØ¸Ù'],
-  sales: ['sales', 'revenue', 'amount', 'total', 'Ø§Ù„Ù…Ø¨ÙŠØ¹Ø§Øª', 'Ø§Ù„Ø§ÙŠØ±Ø§Ø¯Ø§Øª', 'Ø§Ù„Ø¥ÙŠØ±Ø§Ø¯Ø§Øª', 'Ø§Ù„Ù‚ÙŠÙ…Ø©', 'Ø§Ù„Ø§Ø¬Ù…Ø§Ù„ÙŠ', 'Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ'],
-  orders: ['orders', 'ordercount', 'transactions', 'Ø§Ù„Ø·Ù„Ø¨Ø§Øª', 'Ø¹Ø¯Ø¯Ø§Ù„Ø·Ù„Ø¨Ø§Øª', 'Ø§Ù„Ø¹Ù…Ù„ÙŠØ§Øª'],
-  returns: ['returns', 'refunds', 'returnamount', 'Ø§Ù„Ù…Ø±ØªØ¬Ø¹Ø§Øª', 'Ø§Ù„Ù…Ø³ØªØ±Ø¬Ø¹'],
-  cost: ['cost', 'cogs', 'Ø§Ù„ØªÙƒÙ„ÙØ©', 'Ø§Ù„ØªÙƒØ§Ù„ÙŠÙ'],
-  quantity: ['quantity', 'qty', 'units', 'Ø§Ù„ÙƒÙ…ÙŠØ©', 'Ø§Ù„Ø¹Ø¯Ø¯'],
-  price: ['price', 'unitprice', 'Ø§Ù„Ø³Ø¹Ø±', 'Ø³Ø¹Ø±Ø§Ù„ÙˆØ­Ø¯Ø©'],
+  date: ['date', 'orderdate', 'transactiondate', 'التاريخ', 'تاريخ', 'تاريخالطلب'],
+  category: ['category', 'segment', 'الفئة', 'التصنيف', 'القسم'],
+  region: ['region', 'area', 'city', 'المنطقة', 'المدينة'],
+  channel: ['channel', 'source', 'القناة', 'المصدر'],
+  product: ['product', 'productname', 'item', 'المنتج', 'اسمالمنتج', 'الصنف'],
+  representative: ['representative', 'rep', 'salesrep', 'employee', 'المندوب', 'الموظف'],
+  sales: ['sales', 'revenue', 'amount', 'total', 'المبيعات', 'الايرادات', 'الإيرادات', 'القيمة', 'الاجمالي', 'الإجمالي'],
+  orders: ['orders', 'ordercount', 'transactions', 'الطلبات', 'عددالطلبات', 'العمليات'],
+  returns: ['returns', 'refunds', 'returnamount', 'المرتجعات', 'المسترجع'],
+  cost: ['cost', 'cogs', 'التكلفة', 'التكاليف'],
+  quantity: ['quantity', 'qty', 'units', 'الكمية', 'العدد'],
+  price: ['price', 'unitprice', 'السعر', 'سعرالوحدة'],
 };
 
 const normalizeHeader = (value: unknown) =>
@@ -58,7 +58,7 @@ const findValue = (row: Record<string, unknown>, key: keyof DashboardRow) => {
 const toNumber = (value: unknown, fallback = 0) => {
   if (typeof value === 'number' && Number.isFinite(value)) return value;
   const normalized = String(value ?? '')
-    .replace(/[Ù¬ØŒ,]/g, '')
+    .replace(/[٬،,]/g, '')
     .replace(/[^\d.-]/g, '');
   const parsed = Number(normalized);
   return Number.isFinite(parsed) ? parsed : fallback;
@@ -85,13 +85,13 @@ const toDate = (value: unknown, index: number) => {
 export function parseWorkbook(bytes: Uint8Array): DashboardRow[] {
   const workbook = XLSX.read(bytes, { type: 'array', cellDates: true });
   const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-  if (!firstSheet) throw new Error('Ø§Ù„Ù…Ù„Ù Ù„Ø§ ÙŠØ­ØªÙˆÙŠ Ø¹Ù„Ù‰ ÙˆØ±Ù‚Ø© Ø¨ÙŠØ§Ù†Ø§Øª.');
+  if (!firstSheet) throw new Error('The file does not contain a data sheet.');
 
   const rawRows: Record<string, unknown>[] = XLSX.utils.sheet_to_json<Record<string, unknown>>(firstSheet, {
     defval: '',
     raw: true,
   });
-  if (!rawRows.length) throw new Error('ÙˆØ±Ù‚Ø© Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª ÙØ§Ø±ØºØ©.');
+  if (!rawRows.length) throw new Error('The data sheet is empty.');
 
   const rows = rawRows
     .map((raw: Record<string, unknown>, index: number): DashboardRow | null => {
@@ -103,11 +103,11 @@ export function parseWorkbook(bytes: Uint8Array): DashboardRow[] {
 
       return {
         date: toDate(findValue(raw, 'date'), index),
-        category: String(findValue(raw, 'category') || 'ØºÙŠØ± Ù…ØµÙ†Ù').trim(),
-        region: String(findValue(raw, 'region') || 'ØºÙŠØ± Ù…Ø­Ø¯Ø¯').trim(),
-        channel: String(findValue(raw, 'channel') || 'ØºÙŠØ± Ù…Ø­Ø¯Ø¯').trim(),
-        product: String(findValue(raw, 'product') || `Ù…Ù†ØªØ¬ ${index + 1}`).trim(),
-        representative: String(findValue(raw, 'representative') || 'ØºÙŠØ± Ù…Ø­Ø¯Ø¯').trim(),
+        category: String(findValue(raw, 'category') || 'Uncategorized').trim(),
+        region: String(findValue(raw, 'region') || 'Unspecified').trim(),
+        channel: String(findValue(raw, 'channel') || 'Unspecified').trim(),
+        product: String(findValue(raw, 'product') || `Product ${index + 1}`).trim(),
+        representative: String(findValue(raw, 'representative') || 'Unspecified').trim(),
         sales,
         orders: Math.max(1, toNumber(findValue(raw, 'orders'), 1)),
         returns: Math.max(0, toNumber(findValue(raw, 'returns'))),
@@ -119,7 +119,7 @@ export function parseWorkbook(bytes: Uint8Array): DashboardRow[] {
     .filter((row: DashboardRow | null): row is DashboardRow => row !== null);
 
   if (!rows.length) {
-    throw new Error('Ù„Ù… Ø£Ø¬Ø¯ Ø¹Ù…ÙˆØ¯ Ù…Ø¨ÙŠØ¹Ø§Øª Ø£Ùˆ Ø³Ø¹Ø± Ã— ÙƒÙ…ÙŠØ© ÙÙŠ Ø§Ù„Ù…Ù„Ù.');
+    throw new Error('No Sales column or Price × Quantity values were found in the file.');
   }
   return rows;
 }
@@ -130,10 +130,10 @@ const seeded = (seed: number) => {
 };
 
 export function createSampleData(): DashboardRow[] {
-  const categories = ['Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠØ§Øª', 'Ø£Ø¬Ù‡Ø²Ø© Ù…Ù†Ø²Ù„ÙŠØ©', 'Ø¥ÙƒØ³Ø³ÙˆØ§Ø±Ø§Øª', 'Ø®Ø¯Ù…Ø§Øª'];
-  const products = ['Ø¬Ù‡Ø§Ø² A', 'Ø¬Ù‡Ø§Ø² B', 'Ù…Ù„Ø­Ù‚ C', 'Ø®Ø¯Ù…Ø© Pro'];
-  const regions = ['Ø§Ù„Ø±ÙŠØ§Ø¶', 'Ø¬Ø¯Ø©', 'Ø§Ù„Ø´Ø±Ù‚ÙŠØ©'];
-  const channels = ['Ø£ÙˆÙ†Ù„Ø§ÙŠÙ†', 'Ø§Ù„Ù…ØªØ¬Ø±', 'Ø§Ù„Ø´Ø±ÙƒØ§Ø¡'];
+  const categories = ['Electronics', 'Home Appliances', 'Accessories', 'Services'];
+  const products = ['Device A', 'Device B', 'Accessory C', 'Service Pro'];
+  const regions = ['Riyadh', 'Jeddah', 'Eastern Province'];
+  const channels = ['Online', 'Store', 'Partners'];
   const rows: DashboardRow[] = [];
 
   for (let month = 0; month < 12; month += 1) {
@@ -148,7 +148,7 @@ export function createSampleData(): DashboardRow[] {
         region: regions[(month + category) % regions.length],
         channel: channels[(month * 2 + category) % channels.length],
         product: products[category],
-        representative: ['Ø³Ø§Ø±Ø©', 'Ù…Ø­Ù…Ø¯', 'Ù†ÙˆØ±Ø©'][(month + category * 2) % 3],
+        representative: ['Sarah', 'Mohammed', 'Nora'][(month + category * 2) % 3],
         sales,
         orders: Math.max(4, Math.round(quantity / 2.3)),
         returns: sales * (0.012 + seeded(seed + 2) * 0.035),
@@ -167,7 +167,7 @@ export function uniqueValues(rows: DashboardRow[], key: 'region' | 'category' | 
 
 function periodStart(rows: DashboardRow[], period: DashboardFilters['period']) {
   if (period === ALL || !rows.length) return null;
-  const months = period === 'Ø¢Ø®Ø± 3 Ø£Ø´Ù‡Ø±' ? 3 : period === 'Ø¢Ø®Ø± 6 Ø£Ø´Ù‡Ø±' ? 6 : 12;
+  const months = period === 'Last 3 months' ? 3 : period === 'Last 6 months' ? 6 : 12;
   const maxDate = new Date(Math.max(...rows.map((row) => new Date(row.date).getTime())));
   maxDate.setMonth(maxDate.getMonth() - months + 1);
   maxDate.setDate(1);
@@ -263,3 +263,4 @@ export const defaultFilters: DashboardFilters = {
   excludeReturns: true,
   comparePrevious: true,
 };
+
