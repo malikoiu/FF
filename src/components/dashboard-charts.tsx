@@ -5,7 +5,7 @@ import Svg, { Circle, G, Line, Path, Polyline } from 'react-native-svg';
 const colors = ['#63E6E2', '#9B7BFF', '#4CA6FF', '#FF73B3', '#FFC857', '#48D597'];
 
 const compact = (value: number) =>
-  new Intl.NumberFormat('ar-SA', { notation: 'compact', maximumFractionDigits: 1 }).format(value);
+  new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(value);
 
 type SeriesPoint = { label: string; value: number };
 
@@ -127,18 +127,18 @@ export function LineChart({
       </Svg>
       {selected !== null && points[selected] && (
         <Text style={styles.lineValue}>
-          {points[selected].label} Â· {compact(points[selected].value)}
+          {points[selected].label} · {compact(points[selected].value)}
         </Text>
       )}
       <View style={styles.legendRow}>
         <View style={styles.legendItem}>
           <View style={[styles.legendDot, { backgroundColor: '#63E6E2' }]} />
-          <Text style={styles.legendText}>Ø§Ù„ÙØªØ±Ø© Ø§Ù„Ø­Ø§Ù„ÙŠØ©</Text>
+          <Text style={styles.legendText}>Current period</Text>
         </View>
         {compare && (
           <View style={styles.legendItem}>
             <View style={[styles.legendDot, { backgroundColor: '#6E7896' }]} />
-            <Text style={styles.legendText}>Ø§Ù„ÙØªØ±Ø© Ø§Ù„Ø³Ø§Ø¨Ù‚Ø©</Text>
+            <Text style={styles.legendText}>Previous period</Text>
           </View>
         )}
       </View>
@@ -198,7 +198,7 @@ export function DonutChart({ data, width }: { data: SeriesPoint[]; width: number
         </Svg>
         <View style={styles.donutCenter}>
           <Text style={styles.donutTotal}>{compact(total)}</Text>
-          <Text style={styles.donutCaption}>Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ</Text>
+          <Text style={styles.donutCaption}>Total</Text>
         </View>
       </View>
       <View style={styles.donutLegend}>
@@ -206,7 +206,7 @@ export function DonutChart({ data, width }: { data: SeriesPoint[]; width: number
           <View key={segment.label} style={styles.channelRow}>
             <View style={[styles.legendDot, { backgroundColor: segment.color }]} />
             <Text numberOfLines={1} style={styles.channelName}>{segment.label}</Text>
-            <Text style={styles.channelValue}>{Math.round((segment.value / total) * 100)}Ùª</Text>
+            <Text style={styles.channelValue}>{Math.round((segment.value / total) * 100)}%</Text>
           </View>
         ))}
       </View>
@@ -250,12 +250,12 @@ export function ScatterChart({
       </Svg>
       {selected !== null && data[selected] && (
         <Text style={styles.lineValue}>
-          {data[selected].label} Â· ÙƒÙ…ÙŠØ© {compact(data[selected].x)} Â· Ø³Ø¹Ø± {compact(data[selected].y)}
+          {data[selected].label} · Quantity {compact(data[selected].x)} · Price {compact(data[selected].y)}
         </Text>
       )}
       <View style={styles.scatterLabels}>
-        <Text style={styles.axisLabel}>Ø§Ù„Ø³Ø¹Ø± â†‘</Text>
-        <Text style={styles.axisLabel}>Ø§Ù„ÙƒÙ…ÙŠØ© â†</Text>
+        <Text style={styles.axisLabel}>Price ↑</Text>
+        <Text style={styles.axisLabel}>Quantity →</Text>
       </View>
     </View>
   );
@@ -302,13 +302,13 @@ const styles = StyleSheet.create({
     marginTop: -3,
   },
   legendRow: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     justifyContent: 'center',
     gap: 18,
     marginTop: 8,
   },
   legendItem: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
   },
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   donutLayout: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
   channelRow: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 7,
   },
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     color: '#B8C0D7',
     fontSize: 12,
     flex: 1,
-    textAlign: 'right',
+    textAlign: 'left',
   },
   channelValue: {
     color: '#F4F6FC',
@@ -364,7 +364,8 @@ const styles = StyleSheet.create({
   },
   scatterLabels: {
     marginTop: -8,
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     justifyContent: 'space-between',
   },
 });
+
