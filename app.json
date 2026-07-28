@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Ù„ÙˆØ­Ø© Ø£Ø¹Ù…Ø§Ù„ÙŠ",
+    "name": "Analytics Dashboard",
     "slug": "analytics-dashboard",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "scheme": "analyticsdashboard",
     "userInterfaceStyle": "dark",
@@ -38,3 +38,4 @@
     }
   }
 }
+
