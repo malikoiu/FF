@@ -38,6 +38,14 @@ jobs:
           rm -f package-lock.json
           npm install --package-lock=false --no-audit --no-fund
 
+      - name: Apply Swift 6.2 compatibility patch
+        shell: bash
+        run: |
+          DATE_SWIFT="node_modules/expo-modules-jsi/apple/Sources/ExpoModulesJSI/Coding/JavaScriptCodable+Date.swift"
+          grep -q 'abs(milliseconds) <= maxJavaScriptDateMilliseconds' "$DATE_SWIFT"
+          perl -0pi -e 's/abs\(milliseconds\) <= maxJavaScriptDateMilliseconds/Swift.abs(milliseconds) <= maxJavaScriptDateMilliseconds/' "$DATE_SWIFT"
+          grep -q 'Swift.abs(milliseconds) <= maxJavaScriptDateMilliseconds' "$DATE_SWIFT"
+
       - name: Generate native iOS project
         run: npx expo prebuild --platform ios --no-install --clean
 
