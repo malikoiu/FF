@@ -1,14 +1,18 @@
-Date,Category,Region,Channel,Product,Representative,Sales,Orders,Returns,Cost,Quantity,Price
-2025-01-05,Electronics,Riyadh,Online,Device A,Sarah,85000,42,2100,49000,68,1250
-2025-01-12,Home Appliances,Jeddah,Store,Device B,Mohammed,64000,36,1100,39000,80,800
-2025-02-04,Accessories,Eastern Province,Partners,Accessory C,Nora,32000,58,450,14500,160,200
-2025-03-18,Services,Riyadh,Online,Service Pro,Sarah,47000,29,700,18500,47,1000
-2025-04-09,Electronics,Jeddah,Store,Device A,Mohammed,92000,47,1800,53500,72,1278
-2025-05-21,Home Appliances,Eastern Province,Online,Device B,Nora,71000,39,1300,42000,86,826
-2025-06-11,Accessories,Riyadh,Partners,Accessory C,Sarah,39000,63,550,17000,188,207
-2025-07-27,Services,Jeddah,Online,Service Pro,Mohammed,53000,34,900,20700,53,1000
-2025-08-08,Electronics,Eastern Province,Store,Device A,Nora,101000,52,2400,58200,79,1278
-2025-09-16,Home Appliances,Riyadh,Online,Device B,Sarah,78000,44,1250,45600,93,839
-2025-10-23,Accessories,Jeddah,Partners,Accessory C,Mohammed,44000,69,620,19100,205,215
-2025-11-14,Services,Eastern Province,Online,Service Pro,Nora,61000,38,750,23300,61,1000
+Date,Region,Aid Type,Program,Partner,Status,Beneficiaries,Households,Aid Amount,Target Beneficiaries,Urgent Cases,Delivered Cases,Pending Cases,Vulnerability Score
+2025-01-05,North District,Food Security,Emergency Food Basket,Relief Network,Active,820,182,61500,1050,96,161,31,78
+2025-01-09,Central District,Shelter,Safe Shelter,Hope Foundation,Needs attention,430,91,77400,780,88,68,43,86
+2025-02-04,Coastal District,Health,Mobile Health,Health Alliance,Active,970,221,106700,1180,104,195,26,74
+2025-02-15,Border District,WASH,Clean Water Access,Community Aid,Needs attention,610,136,57950,1020,143,94,58,91
+2025-03-06,Central District,Food Security,Emergency Food Basket,Relief Network,Completed,1120,249,84000,1160,62,244,0,69
+2025-03-18,North District,Shelter,Safe Shelter,Hope Foundation,Active,690,151,124200,860,74,133,18,73
+2025-04-08,Border District,Health,Mobile Health,Health Alliance,Needs attention,540,122,64800,940,131,81,49,89
+2025-04-20,Coastal District,WASH,Clean Water Access,Community Aid,Active,880,196,83600,1040,79,177,22,72
+2025-05-11,North District,Food Security,Emergency Food Basket,Relief Network,Active,1010,224,75750,1210,85,205,19,76
+2025-06-03,Central District,Shelter,Safe Shelter,Hope Foundation,Needs attention,520,114,93600,890,112,84,45,88
+2025-07-16,Coastal District,Health,Mobile Health,Health Alliance,Completed,1090,246,119900,1120,57,241,0,67
+2025-08-07,Border District,WASH,Clean Water Access,Community Aid,Needs attention,670,149,63650,1080,151,101,54,93
+2025-09-19,North District,Health,Mobile Health,Health Alliance,Active,940,213,103400,1100,83,190,23,79
+2025-10-10,Central District,WASH,Clean Water Access,Community Aid,Active,790,176,75050,980,91,154,28,81
+2025-11-14,Coastal District,Food Security,Emergency Food Basket,Relief Network,Completed,1180,262,88500,1210,49,258,0,65
+2025-12-06,Border District,Shelter,Safe Shelter,Hope Foundation,Needs attention,480,105,86400,900,126,72,51,90
 
