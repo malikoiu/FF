@@ -250,12 +250,12 @@ export function ScatterChart({
       </Svg>
       {selected !== null && data[selected] && (
         <Text style={styles.lineValue}>
-          {data[selected].label} · Quantity {compact(data[selected].x)} · Price {compact(data[selected].y)}
+          {data[selected].label} · Vulnerability {compact(data[selected].x)} · Aid/person {compact(data[selected].y)}
         </Text>
       )}
       <View style={styles.scatterLabels}>
-        <Text style={styles.axisLabel}>Price ↑</Text>
-        <Text style={styles.axisLabel}>Quantity →</Text>
+        <Text style={styles.axisLabel}>Aid/person ↑</Text>
+        <Text style={styles.axisLabel}>Vulnerability →</Text>
       </View>
     </View>
   );
