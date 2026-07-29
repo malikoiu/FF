@@ -41,7 +41,7 @@ const palette = {
   green: '#48D597',
 };
 
-const savedFile = () => new File(Paths.document, 'dashboard-data.json');
+const savedFile = () => new File(Paths.document, 'humanitarian-dashboard-data.json');
 
 const formatCompact = (value: number) =>
   new Intl.NumberFormat('en-US', {
@@ -49,7 +49,7 @@ const formatCompact = (value: number) =>
     maximumFractionDigits: 1,
   }).format(value);
 
-const formatMoney = (value: number) => `$${formatCompact(value)}`;
+const formatMoney = (value: number) => `USD ${formatCompact(value)}`;
 
 type CardProps = {
   title: string;
@@ -162,15 +162,15 @@ export default function DashboardScreen() {
   const options = useMemo(
     () => ({
       regions: uniqueValues(rows, 'region'),
-      categories: uniqueValues(rows, 'category'),
-      channels: uniqueValues(rows, 'channel'),
+      aidTypes: uniqueValues(rows, 'aidType'),
+      statuses: uniqueValues(rows, 'status'),
     }),
     [rows],
   );
   const activeFilterCount = [
     filters.region !== 'All',
-    filters.category !== 'All',
-    filters.channel !== 'All',
+    filters.aidType !== 'All',
+    filters.status !== 'All',
     filters.period !== 'All',
   ].filter(Boolean).length;
 
@@ -241,8 +241,8 @@ export default function DashboardScreen() {
               <View style={styles.logoDot} />
             </View>
             <View style={styles.titleCopy}>
-              <Text style={styles.eyebrow}>ANALYTICS EXPLORER</Text>
-              <Text style={styles.pageTitle}>Performance Dashboard</Text>
+              <Text style={styles.eyebrow}>HUMANITARIAN RESPONSE</Text>
+              <Text style={styles.pageTitle}>Aid Operations Dashboard</Text>
             </View>
           </View>
           <Pressable
@@ -303,73 +303,124 @@ export default function DashboardScreen() {
             <>
               <View style={styles.kpiGrid}>
                 <KpiCard
-                  label="Net Sales"
-                  value={formatMoney(data.revenue)}
-                  detail={filters.includeVat ? 'Including VAT' : 'Before VAT'}
+                  label="People Reached"
+                  value={formatCompact(data.beneficiaries)}
+                  detail={`${formatCompact(data.households)} households`}
                   color={palette.cyan}
                 />
                 <KpiCard
-                  label="Average Order"
-                  value={formatMoney(data.averageOrder)}
-                  detail={`${formatCompact(data.orders)} orders`}
+                  label="Aid Delivered"
+                  value={formatMoney(data.aidAmount)}
+                  detail={`${formatMoney(data.averageAid)} per person`}
                   color="#F3F5FB"
                 />
                 <KpiCard
-                  label="Growth"
-                  value={`${data.growth >= 0 ? '+' : ''}${data.growth.toFixed(1)}%`}
-                  detail="vs. previous half"
-                  color={data.growth >= 0 ? palette.green : palette.pink}
+                  label="Target Coverage"
+                  value={`${data.coverageRate.toFixed(1)}%`}
+                  detail={`${formatCompact(data.targetBeneficiaries)} people targeted`}
+                  color={data.coverageRate >= 85 ? palette.green : palette.purple}
                 />
                 <KpiCard
-                  label="Return Rate"
-                  value={`${data.returnRate.toFixed(1)}%`}
-                  detail={`${data.margin.toFixed(1)}% margin`}
+                  label="Urgent Cases"
+                  value={formatCompact(data.urgentCases)}
+                  detail={`${formatCompact(data.pendingCases)} cases pending`}
                   color={palette.pink}
                 />
               </View>
 
               <View style={[styles.chartGrid, isWide && styles.chartGridWide]}>
-                <Card title="Sales by Category" style={isWide ? styles.halfCard : undefined}>
+                <Card title="People Reached by Aid Type" style={isWide ? styles.halfCard : undefined}>
                   <BarChart data={data.categories} width={chartWidth} />
                 </Card>
                 <Card
-                  title="Sales Trend"
-                  subtitle="Tap any point for details"
+                  title="Monthly Reach Trend"
+                  subtitle="Tap a point to inspect beneficiary reach"
                   style={isWide ? styles.halfCard : undefined}>
                   <LineChart data={data.trend} width={chartWidth} compare={filters.comparePrevious} />
                 </Card>
                 <Card
-                  title="Price vs. Quantity"
-                  subtitle="Tap a point to explore"
+                  title="Vulnerability vs. Aid per Person"
+                  subtitle="Tap a point to inspect a response activity"
                   style={isWide ? styles.halfCard : undefined}>
                   <ScatterChart data={data.scatter} width={chartWidth} />
                 </Card>
-                <Card title="Sales Channel Mix" style={isWide ? styles.halfCard : undefined}>
+                <Card title="Regional Reach Mix" style={isWide ? styles.halfCard : undefined}>
                   <DonutChart data={data.channels} width={chartWidth} />
                 </Card>
               </View>
 
-              <Card title="Top Product Details">
-                <View style={styles.tableHeader}>
-                  <Text style={[styles.tableHeaderText, styles.productCell]}>Product</Text>
-                  <Text style={styles.tableHeaderText}>Sales</Text>
-                  <Text style={styles.tableHeaderText}>Margin</Text>
-                  <Text style={styles.tableHeaderText}>Growth</Text>
+              <Card title="Data Insights" subtitle="Automatically generated from the selected records">
+                <View style={styles.insightList}>
+                  {data.insights.map((insight) => (
+                    <View
+                      key={insight.title}
+                      style={[
+                        styles.insightRow,
+                        insight.tone === 'warning' && styles.insightWarning,
+                        insight.tone === 'positive' && styles.insightPositive,
+                      ]}>
+                      <View
+                        style={[
+                          styles.insightDot,
+                          insight.tone === 'warning' && styles.insightDotWarning,
+                          insight.tone === 'positive' && styles.insightDotPositive,
+                        ]}
+                      />
+                      <View style={styles.insightCopy}>
+                        <Text style={styles.insightTitle}>{insight.title}</Text>
+                        <Text style={styles.insightBody}>{insight.body}</Text>
+                      </View>
+                    </View>
+                  ))}
                 </View>
-                {data.products.map((product, index) => (
+              </Card>
+
+              <Card title="Recommended Actions" subtitle="Rule-based operational recommendations">
+                <View style={styles.recommendationList}>
+                  {data.recommendations.map((recommendation, index) => (
+                    <View key={recommendation.title} style={styles.recommendationRow}>
+                      <View style={styles.recommendationNumber}>
+                        <Text style={styles.recommendationNumberText}>{index + 1}</Text>
+                      </View>
+                      <View style={styles.insightCopy}>
+                        <View style={styles.recommendationHeading}>
+                          <Text style={styles.insightTitle}>{recommendation.title}</Text>
+                          <Text
+                            style={[
+                              styles.priorityBadge,
+                              recommendation.priority === 'High' && styles.priorityHigh,
+                            ]}>
+                            {recommendation.priority}
+                          </Text>
+                        </View>
+                        <Text style={styles.insightBody}>{recommendation.body}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              </Card>
+
+              <Card title="Priority Program Details">
+                <View style={styles.tableHeader}>
+                  <Text style={[styles.tableHeaderText, styles.productCell]}>Program</Text>
+                  <Text style={styles.tableHeaderText}>Reached</Text>
+                  <Text style={styles.tableHeaderText}>Coverage</Text>
+                  <Text style={styles.tableHeaderText}>Urgent</Text>
+                </View>
+                {data.programs.map((program, index) => (
                   <View
-                    key={product.name}
-                    style={[styles.tableRow, index === data.products.length - 1 && styles.lastRow]}>
+                    key={program.name}
+                    style={[styles.tableRow, index === data.programs.length - 1 && styles.lastRow]}>
                     <View style={[styles.productCell, styles.productNameCell]}>
                       <View style={[styles.rank, { backgroundColor: `${['#63E6E2', '#9B7BFF', '#4CA6FF', '#FF73B3', '#FFC857'][index]}22` }]}>
                         <Text style={styles.rankText}>{index + 1}</Text>
                       </View>
-                      <Text numberOfLines={1} style={styles.productName}>{product.name}</Text>
+                      <Text numberOfLines={1} style={styles.productName}>{program.name}</Text>
                     </View>
-                    <Text style={styles.tableValue}>{formatCompact(product.sales)}</Text>
-                    <Text style={styles.tableValue}>{product.margin.toFixed(0)}%</Text>
-                    <Text style={[styles.tableValue, { color: product.growth >= 0 ? palette.green : palette.pink }]}>
-                      {product.growth >= 0 ? '+' : ''}{product.growth.toFixed(0)}%
+                    <Text style={styles.tableValue}>{formatCompact(program.beneficiaries)}</Text>
+                    <Text style={styles.tableValue}>{program.coverage.toFixed(0)}%</Text>
+                    <Text style={[styles.tableValue, { color: program.urgent ? palette.pink : palette.green }]}>
+                      {formatCompact(program.urgent)}
                     </Text>
                   </View>
                 ))}
@@ -378,9 +429,9 @@ export default function DashboardScreen() {
               <View style={styles.privacyNote}>
                 <Text style={styles.privacyIcon}>◉</Text>
                 <View style={styles.privacyCopy}>
-                  <Text style={styles.privacyTitle}>Your data stays on your device</Text>
+                  <Text style={styles.privacyTitle}>Sensitive humanitarian data stays on your device</Text>
                   <Text style={styles.privacyBody}>
-                    Files are processed locally. The app never sends your data to a server.
+                    Files, insights, and recommendations are processed locally. Nothing is sent to a server.
                   </Text>
                 </View>
               </View>
@@ -423,42 +474,42 @@ export default function DashboardScreen() {
                 onSelect={(region) => patchFilters({ region })}
               />
               <FilterGroup
-                title="Category"
-                values={options.categories}
-                selected={filters.category}
-                onSelect={(category) => patchFilters({ category })}
+                title="Aid Type"
+                values={options.aidTypes}
+                selected={filters.aidType}
+                onSelect={(aidType) => patchFilters({ aidType })}
               />
               <FilterGroup
-                title="Sales Channel"
-                values={options.channels}
-                selected={filters.channel}
-                onSelect={(channel) => patchFilters({ channel })}
+                title="Program Status"
+                values={options.statuses}
+                selected={filters.status}
+                onSelect={(status) => patchFilters({ status })}
               />
 
               <View style={styles.switchGroup}>
-                <Text style={styles.filterTitle}>Calculation Options</Text>
+                <Text style={styles.filterTitle}>Analysis Options</Text>
                 <View style={styles.switchRow}>
                   <View style={styles.switchCopy}>
-                    <Text style={styles.switchTitle}>Include VAT</Text>
-                    <Text style={styles.switchSubtitle}>Add 15% to sales</Text>
+                    <Text style={styles.switchTitle}>Include Pending Caseload</Text>
+                    <Text style={styles.switchSubtitle}>Add pending cases to the coverage denominator</Text>
                   </View>
                   <Switch
-                    value={filters.includeVat}
-                    onValueChange={(includeVat) => patchFilters({ includeVat })}
+                    value={filters.includePending}
+                    onValueChange={(includePending) => patchFilters({ includePending })}
                     trackColor={{ false: '#303A55', true: '#337C7B' }}
-                    thumbColor={filters.includeVat ? palette.cyan : '#D7DCE9'}
+                    thumbColor={filters.includePending ? palette.cyan : '#D7DCE9'}
                   />
                 </View>
                 <View style={styles.switchRow}>
                   <View style={styles.switchCopy}>
-                    <Text style={styles.switchTitle}>Deduct Returns</Text>
-                    <Text style={styles.switchSubtitle}>Show net sales after returns</Text>
+                    <Text style={styles.switchTitle}>Prioritize Urgent Gaps</Text>
+                    <Text style={styles.switchSubtitle}>Rank programs using urgent caseload and severity</Text>
                   </View>
                   <Switch
-                    value={filters.excludeReturns}
-                    onValueChange={(excludeReturns) => patchFilters({ excludeReturns })}
+                    value={filters.prioritizeUrgent}
+                    onValueChange={(prioritizeUrgent) => patchFilters({ prioritizeUrgent })}
                     trackColor={{ false: '#303A55', true: '#337C7B' }}
-                    thumbColor={filters.excludeReturns ? palette.cyan : '#D7DCE9'}
+                    thumbColor={filters.prioritizeUrgent ? palette.cyan : '#D7DCE9'}
                   />
                 </View>
                 <View style={[styles.switchRow, styles.lastSwitchRow]}>
@@ -478,8 +529,9 @@ export default function DashboardScreen() {
               <View style={styles.columnsHint}>
                 <Text style={styles.columnsTitle}>Supported Columns</Text>
                 <Text style={styles.columnsBody}>
-                  Date, Category, Region, Channel, Product, Sales, Orders, Returns,
-                  Cost, Quantity, and Price.
+                  Date, Region, Aid Type, Program, Partner, Status, Beneficiaries,
+                  Households, Aid Amount, Target Beneficiaries, Urgent Cases,
+                  Delivered Cases, Pending Cases, and Vulnerability Score.
                 </Text>
               </View>
 
@@ -737,6 +789,97 @@ const styles = StyleSheet.create({
     fontSize: 10,
     marginTop: 2,
     textAlign: 'left',
+  },
+  insightList: {
+    gap: 9,
+  },
+  insightRow: {
+    flexDirection: 'row',
+    gap: 11,
+    padding: 12,
+    borderRadius: 14,
+    backgroundColor: '#131C31',
+    borderWidth: 1,
+    borderColor: '#263250',
+  },
+  insightWarning: {
+    backgroundColor: '#251926',
+    borderColor: '#553047',
+  },
+  insightPositive: {
+    backgroundColor: '#10251F',
+    borderColor: '#225243',
+  },
+  insightDot: {
+    width: 9,
+    height: 9,
+    borderRadius: 5,
+    marginTop: 4,
+    backgroundColor: palette.purple,
+  },
+  insightDotWarning: {
+    backgroundColor: palette.pink,
+  },
+  insightDotPositive: {
+    backgroundColor: palette.green,
+  },
+  insightCopy: {
+    flex: 1,
+  },
+  insightTitle: {
+    color: palette.text,
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: '800',
+  },
+  insightBody: {
+    color: '#9FA9C4',
+    fontSize: 10,
+    lineHeight: 16,
+    marginTop: 3,
+  },
+  recommendationList: {
+    gap: 4,
+  },
+  recommendationRow: {
+    flexDirection: 'row',
+    gap: 11,
+    paddingVertical: 11,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: palette.border,
+  },
+  recommendationNumber: {
+    width: 28,
+    height: 28,
+    borderRadius: 9,
+    backgroundColor: '#252F50',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  recommendationNumberText: {
+    color: palette.cyan,
+    fontSize: 11,
+    fontWeight: '900',
+  },
+  recommendationHeading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  priorityBadge: {
+    color: palette.purple,
+    backgroundColor: '#292342',
+    borderRadius: 8,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    fontSize: 9,
+    fontWeight: '800',
+    overflow: 'hidden',
+  },
+  priorityHigh: {
+    color: palette.pink,
+    backgroundColor: '#3A2031',
   },
   tableHeader: {
     minHeight: 34,
