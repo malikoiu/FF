@@ -1,6 +1,16 @@
-# Analytics Dashboard
+# Humanitarian Aid Dashboard
 
-An interactive iPhone dashboard for importing and analyzing Excel and CSV files locally. The app uses a polished dark interface with KPIs, interactive charts, filters, and previous-period comparisons.
+An interactive iPhone dashboard for monitoring humanitarian assistance from Excel and CSV files. All files, insights, and recommendations are processed locally on the device.
+
+## Dashboard capabilities
+
+- People reached and households assisted
+- Aid amount and aid per beneficiary
+- Target coverage, urgent cases, and pending caseload
+- Reach by aid type, month, region, and vulnerability
+- Automatically generated operational insights
+- Rule-based recommendations for coverage gaps, urgent needs, pending cases, and allocation review
+- Filters for period, region, aid type, and program status
 
 ## Run the project
 
@@ -9,34 +19,26 @@ npm install
 npx expo start
 ```
 
-Open the QR code using Expo Go for SDK 57, or run the web version:
-
-```bash
-npx expo start --web
-```
-
-## Data format
-
-The app reads the first worksheet in an Excel file and recognizes these columns:
+## Supported file columns
 
 - Date
-- Category
 - Region
-- Channel
-- Product
-- Representative
-- Sales or Revenue
-- Orders
-- Returns
-- Cost
-- Quantity
-- Price
+- Aid Type
+- Program
+- Partner
+- Status
+- Beneficiaries
+- Households
+- Aid Amount
+- Target Beneficiaries
+- Urgent Cases
+- Delivered Cases
+- Pending Cases
+- Vulnerability Score
 
-If a Sales column is unavailable, the app calculates sales as `Price × Quantity`. A ready-to-use example is included in `sample-data.csv`.
+The first worksheet in an Excel file is used. A ready-to-import example is included in `sample-data.csv`.
 
 ## IPA
 
-The GitHub Actions workflow builds an unsigned IPA on macOS. Sign the IPA with your Apple Developer certificate and provisioning profile before installing it on an iPhone.
-
-Change `ios.bundleIdentifier` in `app.json` before signing if the identifier is already registered to another Apple Developer account.
+GitHub Actions builds an unsigned IPA on macOS. Sign it with an Apple Developer certificate and provisioning profile before installing it on an iPhone.
 
