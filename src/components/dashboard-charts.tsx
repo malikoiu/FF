@@ -217,9 +217,11 @@ export function DonutChart({ data, width }: { data: SeriesPoint[]; width: number
 export function ScatterChart({
   data,
   width,
+  currency,
 }: {
   data: { x: number; y: number; label: string }[];
   width: number;
+  currency: 'USD' | 'SAR';
 }) {
   const height = 165;
   const pad = 18;
@@ -250,11 +252,11 @@ export function ScatterChart({
       </Svg>
       {selected !== null && data[selected] && (
         <Text style={styles.lineValue}>
-          {data[selected].label} · Vulnerability {compact(data[selected].x)} · Aid/person {compact(data[selected].y)}
+          {data[selected].label} · Vulnerability {compact(data[selected].x)} · Aid/person {currency} {compact(data[selected].y)}
         </Text>
       )}
       <View style={styles.scatterLabels}>
-        <Text style={styles.axisLabel}>Aid/person ↑</Text>
+        <Text style={styles.axisLabel}>Aid/person ({currency}) ↑</Text>
         <Text style={styles.axisLabel}>Vulnerability →</Text>
       </View>
     </View>
