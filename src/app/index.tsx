@@ -49,7 +49,8 @@ const formatCompact = (value: number) =>
     maximumFractionDigits: 1,
   }).format(value);
 
-const formatMoney = (value: number) => `USD ${formatCompact(value)}`;
+const formatMoney = (value: number, currency: DashboardFilters['currency']) =>
+  `${currency} ${formatCompact(value)}`;
 
 type CardProps = {
   title: string;
@@ -310,8 +311,8 @@ export default function DashboardScreen() {
                 />
                 <KpiCard
                   label="Aid Delivered"
-                  value={formatMoney(data.aidAmount)}
-                  detail={`${formatMoney(data.averageAid)} per person`}
+                  value={formatMoney(data.aidAmount, filters.currency)}
+                  detail={`${formatMoney(data.averageAid, filters.currency)} per person`}
                   color="#F3F5FB"
                 />
                 <KpiCard
@@ -339,10 +340,14 @@ export default function DashboardScreen() {
                   <LineChart data={data.trend} width={chartWidth} compare={filters.comparePrevious} />
                 </Card>
                 <Card
-                  title="Vulnerability vs. Aid per Person"
+                  title={`Vulnerability vs. Aid per Person (${filters.currency})`}
                   subtitle="Tap a point to inspect a response activity"
                   style={isWide ? styles.halfCard : undefined}>
-                  <ScatterChart data={data.scatter} width={chartWidth} />
+                  <ScatterChart
+                    data={data.scatter}
+                    width={chartWidth}
+                    currency={filters.currency}
+                  />
                 </Card>
                 <Card title="Regional Reach Mix" style={isWide ? styles.halfCard : undefined}>
                   <DonutChart data={data.channels} width={chartWidth} />
@@ -485,6 +490,14 @@ export default function DashboardScreen() {
                 selected={filters.status}
                 onSelect={(status) => patchFilters({ status })}
               />
+              <FilterGroup
+                title="Currency"
+                values={['USD', 'SAR']}
+                selected={filters.currency}
+                onSelect={(currency) =>
+                  patchFilters({ currency: currency as DashboardFilters['currency'] })
+                }
+              />
 
               <View style={styles.switchGroup}>
                 <Text style={styles.filterTitle}>Analysis Options</Text>
@@ -532,6 +545,10 @@ export default function DashboardScreen() {
                   Date, Region, Aid Type, Program, Partner, Status, Beneficiaries,
                   Households, Aid Amount, Target Beneficiaries, Urgent Cases,
                   Delivered Cases, Pending Cases, and Vulnerability Score.
+                </Text>
+                <Text style={styles.columnsBody}>
+                  Select USD or SAR above to label every monetary amount. The app
+                  does not convert values between currencies.
                 </Text>
               </View>
 
