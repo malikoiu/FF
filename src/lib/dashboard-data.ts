@@ -22,6 +22,7 @@ export type DashboardFilters = {
   aidType: string;
   status: string;
   period: 'All' | 'Last 3 months' | 'Last 6 months' | 'Last 12 months';
+  currency: 'USD' | 'SAR';
   includePending: boolean;
   prioritizeUrgent: boolean;
   comparePrevious: boolean;
@@ -384,7 +385,7 @@ export function aggregateData(rows: DashboardRow[], filters: DashboardFilters) {
   if (lowestAid) {
     recommendations.push({
       title: `Review allocation in ${lowestAid.name}`,
-      body: `Aid per reached beneficiary is ${lowestAid.aidPerPerson.toFixed(0)}. Compare this with needs severity and delivery costs before reallocating.`,
+      body: `Aid per reached beneficiary is ${filters.currency} ${lowestAid.aidPerPerson.toFixed(0)}. Compare this with needs severity and delivery costs before reallocating.`,
       priority: 'Medium',
     });
   }
@@ -426,6 +427,7 @@ export const defaultFilters: DashboardFilters = {
   aidType: ALL,
   status: ALL,
   period: ALL,
+  currency: 'USD',
   includePending: true,
   prioritizeUrgent: true,
   comparePrevious: true,
